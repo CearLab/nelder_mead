@@ -4,6 +4,8 @@ import numpy as np
 
 from point import Point
 
+MONITOR_PROGRESS = False
+
 class NelderMead(object):
 
     def __init__(self, func, params, *args, **kwargs):
@@ -91,23 +93,26 @@ class NelderMead(object):
             x = [int(np.round(x_t)) if p_t is "integer" else x_t for p_t, x_t in zip(self.p_types, x)]
             objval = self._coef * self.func(x)
 
-        print("{:5d} | {} | {:>15.5f}".format(
-            self.n_eval,
-            " | ".join(["{:>15.5f}".format(t) for t in x]),
-            self._coef * objval
-        ))
+        if MONITOR_PROGRESS:
+            print("{:5d} | {} | {:>15.5f}".format(
+                self.n_eval,
+                " | ".join(["{:>15.5f}".format(t) for t in x]),
+                self._coef * objval
+            ))
 
         self.n_eval += 1
         return objval
 
     def _opt(self, n_iter):
-        # Print Header
-        print("{:>5} | {} | {:>15}".format(
-            "Eval",
-            " | ".join(["{:>15}".format(name) for name in self.names]),
-            "ObjVal"
-        ))
-        print("-" * (20 + self.dim * 20))
+
+        if MONITOR_PROGRESS:
+            # Print Header
+            print("{:>5} | {} | {:>15}".format(
+                "Eval",
+                " | ".join(["{:>15}".format(name) for name in self.names]),
+                "ObjVal"
+            ))
+            print("-" * (20 + self.dim * 20))
 
         if not self.initialized:
             self._initialize()
@@ -153,7 +158,8 @@ class NelderMead(object):
                 self.simplex[-1] = p_r
 
         self.simplex = sorted(self.simplex, key=lambda p: p.f)
-        print("\nBest Point: {}".format(self.simplex[0]))
+        if MONITOR_PROGRESS:
+            print("\nBest Point: {}".format(self.simplex[0]))
 
     def _centroid(self):
         p_c = Point(self.dim)
