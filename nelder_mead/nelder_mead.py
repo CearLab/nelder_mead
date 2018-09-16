@@ -2,8 +2,7 @@
 
 import numpy as np
 
-from nelder_mead.point import Point
-
+from point import Point
 
 class NelderMead(object):
 
