@@ -4,11 +4,9 @@ import numpy as np
 
 from point import Point
 
-MONITOR_PROGRESS = False
-
 class NelderMead(object):
 
-    def __init__(self, func, params, *args, **kwargs):
+    def __init__(self, func, params, verbose=True, *args, **kwargs):
         """ the Nelder-Mead method
 
         :param func: objective function object
@@ -33,6 +31,7 @@ class NelderMead(object):
         self.p_max = []
         self.simplex = []
         self.initialized = False
+        self.verbose = verbose
 
         self._parse_minmax(params)
 
@@ -58,6 +57,7 @@ class NelderMead(object):
         :param delta_ic: the parameter of inside contraction
         :param delta_oc: the parameter of outside contraction
         :param gamma_s: the parameter of shrink
+        :return best_point, best_objective
 
         """
         self._coef = -1
@@ -65,6 +65,7 @@ class NelderMead(object):
         for k, v in variables.items():
             setattr(self, k, v)
         self._opt(n_iter)
+        return self.simplex[0].x.tolist(), self.simplex[0].f
 
     def minimize(self, n_iter=20, delta_r=1, delta_e=2, delta_ic=-0.5, delta_oc=0.5, gamma_s=0.5):
         """ Minimize the objective function.
@@ -75,6 +76,7 @@ class NelderMead(object):
         :param delta_ic: the parameter of inside contraction
         :param delta_oc: the parameter of outside contraction
         :param gamma_s: the parameter of shrink
+        :return best_point, best_objective
 
         """
         self._coef = 1
@@ -82,6 +84,7 @@ class NelderMead(object):
         for k, v in variables.items():
             setattr(self, k, v)
         self._opt(n_iter)
+        return self.simplex[0].x.tolist(), self.simplex[0].f
 
     def func_impl(self, x):
         objval, invalid = None, False
@@ -93,7 +96,7 @@ class NelderMead(object):
             x = [int(np.round(x_t)) if p_t is "integer" else x_t for p_t, x_t in zip(self.p_types, x)]
             objval = self._coef * self.func(x)
 
-        if MONITOR_PROGRESS:
+        if self.verbose:
             print("{:5d} | {} | {:>15.5f}".format(
                 self.n_eval,
                 " | ".join(["{:>15.5f}".format(t) for t in x]),
@@ -105,7 +108,7 @@ class NelderMead(object):
 
     def _opt(self, n_iter):
 
-        if MONITOR_PROGRESS:
+        if self.verbose:
             # Print Header
             print("{:>5} | {} | {:>15}".format(
                 "Eval",
@@ -158,7 +161,7 @@ class NelderMead(object):
                 self.simplex[-1] = p_r
 
         self.simplex = sorted(self.simplex, key=lambda p: p.f)
-        if MONITOR_PROGRESS:
+        if self.verbose:
             print("\nBest Point: {}".format(self.simplex[0]))
 
     def _centroid(self):
@@ -170,16 +173,16 @@ class NelderMead(object):
         return p_c
 
     def _reflect(self, p_c):
-        return self._generate_point(p_c, self.delta_r)
+        return self._generate_point(p_c, self.delta_r) # TODO: check this thing!
 
     def _expand(self, p_c):
-        return self._generate_point(p_c, self.delta_e)
+        return self._generate_point(p_c, self.delta_e) # TODO: check this thing!
 
     def _inside(self, p_c):
-        return self._generate_point(p_c, self.delta_ic)
+        return self._generate_point(p_c, self.delta_ic) # TODO: check this thing!
 
     def _outside(self, p_c):
-        return self._generate_point(p_c, self.delta_oc)
+        return self._generate_point(p_c, self.delta_oc) # TODO: check this thing!
 
     def _generate_point(self, p_c, x_coef):
         p = Point(self.dim)
