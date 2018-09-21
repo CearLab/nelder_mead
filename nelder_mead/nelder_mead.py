@@ -46,7 +46,7 @@ class NelderMead(object):
             p = Point(self.dim)
             p.x = np.array(param, dtype=np.float32)
             self.simplex.append(p)
-        self.initlized = True
+        self.initialized = True
 
     def maximize(self, n_iter=20, delta_r=1, delta_e=2, delta_ic=-0.5, delta_oc=0.5, gamma_s=0.5):
         """ Maximize the objective function.
@@ -173,16 +173,16 @@ class NelderMead(object):
         return p_c
 
     def _reflect(self, p_c):
-        return self._generate_point(p_c, self.delta_r) # TODO: check this thing!
+        return self._generate_point(p_c, self.delta_r)
 
     def _expand(self, p_c):
-        return self._generate_point(p_c, self.delta_e) # TODO: check this thing!
+        return self._generate_point(p_c, self.delta_e)
 
     def _inside(self, p_c):
-        return self._generate_point(p_c, self.delta_ic) # TODO: check this thing!
+        return self._generate_point(p_c, self.delta_ic)
 
     def _outside(self, p_c):
-        return self._generate_point(p_c, self.delta_oc) # TODO: check this thing!
+        return self._generate_point(p_c, self.delta_oc)
 
     def _generate_point(self, p_c, x_coef):
         p = Point(self.dim)
