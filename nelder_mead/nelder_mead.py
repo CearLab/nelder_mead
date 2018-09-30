@@ -65,7 +65,8 @@ class NelderMead(object):
         for k, v in variables.items():
             setattr(self, k, v)
         self._opt(n_iter)
-        return self.simplex[0].x.tolist(), self.simplex[0].f
+        x_sol = map(lambda (value, type_): int(np.round(value)) if type_ == 'integer' else value, zip(self.simplex[0].x.tolist(), self.p_types)) # TODO: verify
+        return x_sol, self.simplex[0].f * (-1)
 
     def minimize(self, n_iter=20, delta_r=1, delta_e=2, delta_ic=-0.5, delta_oc=0.5, gamma_s=0.5):
         """ Minimize the objective function.
@@ -84,7 +85,8 @@ class NelderMead(object):
         for k, v in variables.items():
             setattr(self, k, v)
         self._opt(n_iter)
-        return self.simplex[0].x.tolist(), self.simplex[0].f
+        x_sol = map(lambda (value, type_): int(np.round(value)) if type_ == 'integer' else value, zip(self.simplex[0].x.tolist(), self.p_types)) # TODO: verify
+        return x_sol, self.simplex[0].f
 
     def func_impl(self, x):
         objval, invalid = None, False
